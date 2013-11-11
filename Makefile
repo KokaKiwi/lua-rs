@@ -1,6 +1,6 @@
 # Rust
 RUST_MODULES						:=	liblua lua
-RUSTCFLAGS							+=	--opt-level=3
+# RUSTCFLAGS							+=	--opt-level=3
 lua_DEPS							:=	liblua
 
 include 							rust-mk/rust.mk
@@ -8,7 +8,7 @@ include 							rust-mk/rust.mk
 # Lua
 CC									?=	gcc
 CFLAGS								:=	-fPIC
-CFLAGS								+=	-O3
+# CFLAGS								+=	-O3
 AR									?=	ar
 RANLIB								?=	ranlib
 
