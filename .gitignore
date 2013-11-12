@@ -1,5 +1,6 @@
 # Rust stuff
 /.rust_build
 /lib
+/doc
 
 /lua
