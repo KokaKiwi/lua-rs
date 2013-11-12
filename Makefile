@@ -1,32 +1,30 @@
 # Rust
-RUST_MODULES						:=	liblua lua
-# RUSTCFLAGS							+=	--opt-level=3
-lua_DEPS							:=	liblua
+RUST_MODULES                        :=  liblua lua
+lua_DEPS                            :=  liblua
 
-include 							rust-mk/rust.mk
+include                             rust-mk/rust.mk
 
 # Lua
-CC									?=	gcc
-CFLAGS								:=	-fPIC
-# CFLAGS								+=	-O3
-AR									?=	ar
-RANLIB								?=	ranlib
+CC                                  ?=  gcc
+CFLAGS                              :=  -fPIC
+AR                                  ?=  ar
+RANLIB                              ?=  ranlib
 
-LUA_VERSION							:=	5.2.2
-LUA_DIRNAME							:=	lua-$(LUA_VERSION)
+LUA_VERSION                         :=  5.2.2
+LUA_DIRNAME                         :=  lua-$(LUA_VERSION)
 
-RUSTCFLAGS							+=	-L $(RUST_BUILDDIR)
+RUSTCFLAGS                          +=  -L $(RUST_BUILDDIR)
 
-$(RUST_BUILDDIR)/.build_liblua:		$(RUST_BUILDDIR)/liblua.a
+$(RUST_BUILDDIR)/.build_liblua:     $(RUST_BUILDDIR)/liblua.a
 
-lua_SOURCES							:=	$(filter-out $(LUA_DIRNAME)/src/lua.c $(LUA_DIRNAME)/src/luac.c,$(wildcard $(LUA_DIRNAME)/src/*.c))
-lua_OBJECTS							:=	$(addprefix $(RUST_BUILDDIR)/lua/,$(notdir $(lua_SOURCES:.c=.o)))
+lua_SOURCES                         :=  $(filter-out $(LUA_DIRNAME)/src/lua.c $(LUA_DIRNAME)/src/luac.c,$(wildcard $(LUA_DIRNAME)/src/*.c))
+lua_OBJECTS                         :=  $(addprefix $(RUST_BUILDDIR)/lua/,$(notdir $(lua_SOURCES:.c=.o)))
 
-$(RUST_BUILDDIR)/liblua.a:			$(RUST_BUILDDIR)/lua $(lua_OBJECTS)
+$(RUST_BUILDDIR)/liblua.a:          $(RUST_BUILDDIR)/lua $(lua_OBJECTS)
 	$(AR) rc $@ $(lua_OBJECTS)
 	$(RANLIB) $@
 
-$(RUST_BUILDDIR)/lua/%.o:			$(LUA_DIRNAME)/src/%.c
+$(RUST_BUILDDIR)/lua/%.o:           $(LUA_DIRNAME)/src/%.c
 	$(CC) $(CFLAGS) -c -o $@ $^
 
 $(RUST_BUILDDIR)/lua:
