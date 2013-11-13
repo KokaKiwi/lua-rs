@@ -34,4 +34,4 @@ expand:
 	$(RUSTC) $(RUSTCFLAGS) --parse-only --pretty expanded src/liblua/lib.rs
 
 llvm:
-	$(RUSTC) --opt-level=3 -S --emit-llvm -o lib.ll src/liblua/lib.rs
+	$(RUSTC) -S --emit-llvm -o lib.ll src/liblua/lib.rs
