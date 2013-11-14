@@ -24,12 +24,12 @@ pub struct lua_Debug
     priv i_ci: *c_void,
 }
 
-pub type lua_CFunction = extern fn(L: *lua_State) -> c_int;
+pub type lua_CFunction = extern "C" fn(L: *lua_State) -> c_int;
 
-pub type lua_Reader = extern fn(L: *lua_State, ud: *c_void, sz: size_t) -> *c_char;
-pub type lua_Writer = extern fn(L: *lua_State, p: *c_void, ze: size_t, ud: *c_void);
+pub type lua_Reader = extern "C" fn(L: *lua_State, ud: *c_void, sz: size_t) -> *c_char;
+pub type lua_Writer = extern "C" fn(L: *lua_State, p: *c_void, ze: size_t, ud: *c_void);
 
-pub type lua_Alloc = extern fn(ud: *c_void, ptr: *c_void, osize: size_t, nsize: size_t);
+pub type lua_Alloc = extern "C" fn(ud: *c_void, ptr: *c_void, osize: size_t, nsize: size_t);
 
 pub type lua_Integer = ptrdiff_t;
 pub type lua_Number = c_double;
@@ -255,6 +255,12 @@ extern
 }
 
 #[fixed_stack_segment]
+pub unsafe fn lua_upvalueindex(i: c_int) -> c_int
+{
+    LUA_REGISTRYINDEX - i
+}
+
+#[fixed_stack_segment]
 pub unsafe fn lua_call(L: *lua_State, nargs: c_int, nresults: c_int)
 {
     lua_callk(L, nargs, nresults, 0, transmute(null::<c_void>()))
@@ -288,6 +294,12 @@ pub unsafe fn lua_tointeger(L: *lua_State, idx: c_int) -> lua_Integer
 pub unsafe fn lua_tounsigned(L: *lua_State, idx: c_int) -> lua_Unsigned
 {
     lua_tounsignedx(L, idx, transmute(null::<c_void>()))
+}
+
+#[fixed_stack_segment]
+pub unsafe fn lua_tostring(L: *lua_State, idx: c_int) -> *c_char
+{
+    lua_tolstring(L, idx, transmute(null::<c_void>()))
 }
 
 #[fixed_stack_segment]
@@ -367,12 +379,6 @@ pub unsafe fn lua_isnoneornil(L: *lua_State, idx: c_int) -> bool
 pub unsafe fn lua_pushglobaltable(L: *lua_State)
 {
     lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS)
-}
-
-#[fixed_stack_segment]
-pub unsafe fn lua_tostring(L: *lua_State, idx: c_int) -> *c_char
-{
-    lua_tolstring(L, idx, transmute(null::<c_void>()))
 }
 
 #[fixed_stack_segment]

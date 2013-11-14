@@ -1,2 +1,6 @@
 
-print("Hello world!")
+function get_name(tot)
+    return transform(tot.name) .. " " .. toto
+end
+
+print("Exec file!")

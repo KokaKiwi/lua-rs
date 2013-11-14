@@ -13,6 +13,13 @@
 #[feature(globs)];
 #[feature(macro_rules)];
 
-mod ffi;
+pub use lua::Lua;
+
+pub mod ffi;
+
+pub mod lua;
 pub mod state;
+
+pub mod traits;
 pub mod types;
+pub mod status;
