@@ -1,3 +1,6 @@
+use std::libc::*;
+use std::cast::transmute;
+
 use state::State;
 use types::*;
 use lua::Lua;
@@ -160,7 +163,13 @@ impl FromLua for fn(l: &Lua) -> int
     {
         match state.get_type(idx)
         {
-            LuaUserData | LuaLightUserData => Some(state.get_userdata::<*()>(idx) as fn(l: &Lua) -> int),
+            LuaUserData | LuaLightUserData => {
+                let ptr: fn(&Lua) -> int = unsafe {
+                    transmute(state.get_userdata::<*c_void>(idx))
+                };
+
+                Some(ptr)
+            }
             _ => None,
         }
     }
