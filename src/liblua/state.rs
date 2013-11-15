@@ -173,6 +173,20 @@ impl<'self> State<'self>
     }
 
     #[fixed_stack_segment]
+    pub fn load_str(&self, source: &str) -> LuaStatus
+    {
+        let status = unsafe {
+            let source = source.to_c_str().unwrap();
+            let status = ffi::luaL_loadstring(self.L, source);
+            free(transmute(source));
+
+            status
+        };
+
+        LuaStatus::from_lua(status)
+    }
+
+    #[fixed_stack_segment]
     pub fn pcall(&self, nargs: int, nresults: int, errfunc: int) -> LuaStatus
     {
         let status = unsafe {
