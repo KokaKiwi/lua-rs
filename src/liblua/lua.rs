@@ -77,4 +77,14 @@ impl<'self> Lua<'self>
             status => status,
         }
     }
+
+    /// Execute a string then return a status.
+    pub fn exec_str(&self, source: &str) -> LuaStatus
+    {
+        match self.state.load_str(source)
+        {
+            LuaOk => self.state.exec(),
+            status => status,
+        }
+    }
 }
