@@ -1,6 +1,6 @@
 #[link(
     name = "lua",
-    vers = "0.1.0",
+    vers = "0.2.0",
     uuid = "4dcb6eef-1da4-4034-a11c-0bd23d9606cf",
     package_id = "liblua"
 )];
