@@ -80,6 +80,26 @@ impl<'self> State<'self>
         LuaType::from_lua(ty)
     }
 
+    /// Create a new Lua thread.
+    #[fixed_stack_segment]
+    pub fn new_thread(&self) -> State
+    {
+        unsafe
+        {
+            State::from_ffi(ffi::lua_newthread(self.L))
+        }
+    }
+
+    /// Get Lua version.
+    #[fixed_stack_segment]
+    pub fn version(&self) -> int
+    {
+        unsafe
+        {
+            ffi::lua_version(self.L) as int
+        }
+    }
+
     /// Pop a stack element specified by his index.
     #[fixed_stack_segment]
     pub fn pop(&self, idx: int)
@@ -174,6 +194,36 @@ impl<'self> State<'self>
         unsafe
         {
             ffi::lua_upvalueindex(i as c_int) as int
+        }
+    }
+
+    /// Get index of the stack's top.
+    #[fixed_stack_segment]
+    pub fn get_top(&self) -> int
+    {
+        unsafe
+        {
+            ffi::lua_gettop(self.L) as int
+        }
+    }
+
+    /// Set index of the stack's top.
+    #[fixed_stack_segment]
+    pub fn set_top(&self, idx: int)
+    {
+        unsafe
+        {
+            ffi::lua_settop(self.L, idx as c_int);
+        }
+    }
+
+    /// Removes the element at the given valid index.
+    #[fixed_stack_segment]
+    pub fn remove(&self, idx: int)
+    {
+        unsafe
+        {
+            ffi::lua_remove(self.L, idx as c_int);
         }
     }
 
@@ -382,7 +432,6 @@ impl<'self> State<'self>
     }
 
     // Function related functions
-
     #[fixed_stack_segment]
     pub fn register(&self, name: &str, f: ffi::lua_CFunction)
     {
@@ -391,6 +440,16 @@ impl<'self> State<'self>
             let c_name = name.to_c_str().unwrap();
             ffi::lua_register(self.L, c_name, f);
             free(transmute(c_name));
+        }
+    }
+
+    // Misc functions
+    #[fixed_stack_segment]
+    pub fn error(&self) -> int
+    {
+        unsafe
+        {
+            ffi::lua_error(self.L) as int
         }
     }
 }
