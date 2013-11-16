@@ -9,6 +9,7 @@ macro_rules! lua_struct(
             use lua::state::State;
             use lua::traits::{FromLua, ToLua};
 
+            #[deriving(Clone, Eq)]
             pub struct $name
             {
                 $( $field: $ty, )+
@@ -41,7 +42,7 @@ macro_rules! lua_struct(
 
             impl ToLua for $name
             {
-                fn to_lua(self, state: &State)
+                fn to_lua(&self, state: &State)
                 {
                     state.new_table();
 
@@ -184,7 +185,7 @@ macro_rules! lua_fn_import(
     };
 
     // Closure with no args and no return value
-    ($lua:ident: $name:ident | |) => {
+    ($lua:ident: $name:ident ||) => {
         || {
             lua_fn_import!($name())
 
@@ -193,11 +194,24 @@ macro_rules! lua_fn_import(
     };
 
     // Closure with no args but return value
-    ($lua:ident: $name: ident | | -> $rty:ty) => {
+    ($lua:ident: $name: ident || -> $rty:ty) => {
         || {
             lua_fn_import!($name() -> $rty)
 
             $name(&$lua)
+        }
+    };
+
+    ($lua:ident: $name:ident | |) => {
+        || {
+            lua_fn_import!($lua: $name ||)
+        }
+    };
+
+    // Closure with no args but return value
+    ($lua:ident: $name: ident | | -> $rty:ty) => {
+        || {
+            lua_fn_import!($lua: $name || -> $rty)
         }
     };
 

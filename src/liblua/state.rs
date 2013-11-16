@@ -243,7 +243,7 @@ impl<'self> State<'self>
 
     // Table functions
     #[fixed_stack_segment]
-    pub fn new_table(&self, )
+    pub fn new_table(&self)
     {
         unsafe
         {
@@ -284,6 +284,47 @@ impl<'self> State<'self>
         unsafe
         {
             ffi::lua_rawseti(self.L, idx as c_int, i as c_int);
+        }
+    }
+
+    #[fixed_stack_segment]
+    pub fn next(&self, idx: int) -> bool
+    {
+        unsafe
+        {
+            ffi::lua_next(self.L, idx as c_int) != 0
+        }
+    }
+
+    #[fixed_stack_segment]
+    pub fn len(&self, idx: int) -> int
+    {
+        unsafe
+        {
+            ffi::lua_len(self.L, idx as c_int);
+        }
+
+        let len = self.get_int(-1);
+        self.pop(1);
+
+        len
+    }
+
+    #[fixed_stack_segment]
+    pub fn get_metatable(&self, idx: int) -> bool
+    {
+        unsafe
+        {
+            ffi::lua_getmetatable(self.L, idx as c_int) != 0
+        }
+    }
+
+    #[fixed_stack_segment]
+    pub fn set_metatable(&self, idx: int)
+    {
+        unsafe
+        {
+            ffi::lua_setmetatable(self.L, idx as c_int);
         }
     }
 

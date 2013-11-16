@@ -1,5 +1,6 @@
 use std::libc::*;
 use std::cast::transmute;
+use std::hashmap::HashMap;
 
 use state::State;
 use types::*;
@@ -18,7 +19,7 @@ pub trait FromLua
 /// A generic trait for converting a Rust value to a Lua value.
 pub trait ToLua
 {
-    fn to_lua(self, state: &State);
+    fn to_lua(&self, state: &State);
 }
 
 // float
@@ -36,9 +37,9 @@ impl FromLua for f64
 
 impl ToLua for f64
 {
-    fn to_lua(self, state: &State)
+    fn to_lua(&self, state: &State)
     {
-        state.push_float(self);
+        state.push_float(*self);
     }
 }
 
@@ -57,9 +58,9 @@ impl FromLua for int
 
 impl ToLua for int
 {
-    fn to_lua(self, state: &State)
+    fn to_lua(&self, state: &State)
     {
-        state.push_int(self);
+        state.push_int(*self);
     }
 }
 
@@ -78,18 +79,18 @@ impl FromLua for uint
 
 impl ToLua for uint
 {
-    fn to_lua(self, state: &State)
+    fn to_lua(&self, state: &State)
     {
-        state.push_uint(self);
+        state.push_uint(*self);
     }
 }
 
 // &str
 impl<'a> ToLua for &'a str
 {
-    fn to_lua(self, state: &State)
+    fn to_lua(&self, state: &State)
     {
-        state.push_str(self);
+        state.push_str(*self);
     }
 }
 
@@ -108,9 +109,9 @@ impl FromLua for ~str
 
 impl ToLua for ~str
 {
-    fn to_lua(self, state: &State)
+    fn to_lua(&self, state: &State)
     {
-        state.push_str(self);
+        state.push_str(*self);
     }
 }
 
@@ -129,9 +130,9 @@ impl FromLua for bool
 
 impl ToLua for bool
 {
-    fn to_lua(self, state: &State)
+    fn to_lua(&self, state: &State)
     {
-        state.push_bool(self);
+        state.push_bool(*self);
     }
 }
 
@@ -150,9 +151,9 @@ impl<T> FromLua for *T
 
 impl<T> ToLua for *T
 {
-    fn to_lua(self, state: &State)
+    fn to_lua(&self, state: &State)
     {
-        state.push_userdata(self);
+        state.push_userdata(*self);
     }
 }
 
@@ -177,8 +178,97 @@ impl FromLua for fn(l: &Lua) -> int
 
 impl ToLua for fn(l: &Lua) -> int
 {
-    fn to_lua(self, state: &State)
+    fn to_lua(&self, state: &State)
     {
-        state.push_function(self);
+        state.push_function(*self);
+    }
+}
+
+// HashMap
+impl<K: ToLua + Hash + Eq, V: ToLua> ToLua for HashMap<K, V>
+{
+    fn to_lua(&self, state: &State)
+    {
+        state.new_table();
+
+        for (ref key, ref val) in self.iter()
+        {
+            key.to_lua(state);
+            val.to_lua(state);
+            state.raw_set(-3);
+        }
+    }
+}
+
+impl<K: FromLua + Hash + Eq, V: FromLua> FromLua for HashMap<K, V>
+{
+    fn from_lua(state: &State, idx: int) -> Option<HashMap<K, V>>
+    {
+        let mut map: HashMap<K, V> = HashMap::new();
+
+        state.push_nil();
+        while state.next(idx - 1)
+        {
+            let key: K = match FromLua::from_lua(state, -2) {
+                Some(k) => k,
+                None => {
+                    return None;
+                }
+            };
+            let val: V = match FromLua::from_lua(state, -1) {
+                Some(v) => v,
+                None => {
+                    return None;
+                }
+            };
+            map.insert(key, val);
+
+            state.pop(1);
+        }
+
+        Some(map)
+    }
+}
+
+// Array
+impl<'a, T: ToLua> ToLua for &'a [T]
+{
+    fn to_lua(&self, state: &State)
+    {
+        state.new_table();
+
+        for (i, ref val) in self.iter().enumerate()
+        {
+            state.push_uint(i + 1);
+            val.to_lua(state);
+            state.raw_set(-3);
+        }
+    }
+}
+
+impl<T: FromLua> FromLua for ~[T]
+{
+    fn from_lua(state: &State, idx: int) -> Option<~[T]>
+    {
+        let mut v = ~[];
+        let length = state.len(idx);
+
+        let mut i = 1;
+        while i <= length
+        {
+            state.push_int(i);
+
+            let val: T = match FromLua::from_lua(state, -1) {
+                Some(val) => val,
+                None => {
+                    return None;
+                }
+            };
+            v.push(val);
+
+            i += 1;
+        }
+
+        Some(v)
     }
 }
