@@ -233,8 +233,7 @@ fn test_module()
 fn bench_load_str(b: &mut extra::test::BenchHarness)
 {
     let state = State::new();
-    do b.iter
-    {
+    b.iter(|| {
         state.load_str("a = 2");
-    }
+    });
 }
