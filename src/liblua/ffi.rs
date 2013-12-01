@@ -254,134 +254,112 @@ extern
     pub fn luaL_unref(L: *lua_State, t: c_int, r: c_int);
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_upvalueindex(i: c_int) -> c_int
 {
     LUA_REGISTRYINDEX - i
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_call(L: *lua_State, nargs: c_int, nresults: c_int)
 {
     lua_callk(L, nargs, nresults, 0, transmute(null::<c_void>()))
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_pcall(L: *lua_State, nargs: c_int, nresults: c_int, errfunc: c_int) -> c_int
 {
     lua_pcallk(L, nargs, nresults, errfunc, 0, transmute(null::<c_void>()))
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_yield(L: *lua_State, nresults: c_int) -> c_int
 {
     lua_yieldk(L, nresults, 0, transmute(null::<c_void>()))
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_tonumber(L: *lua_State, idx: c_int) -> lua_Number
 {
     lua_tonumberx(L, idx, transmute(null::<c_void>()))
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_tointeger(L: *lua_State, idx: c_int) -> lua_Integer
 {
     lua_tointegerx(L, idx, transmute(null::<c_void>()))
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_tounsigned(L: *lua_State, idx: c_int) -> lua_Unsigned
 {
     lua_tounsignedx(L, idx, transmute(null::<c_void>()))
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_tostring(L: *lua_State, idx: c_int) -> *c_char
 {
     lua_tolstring(L, idx, transmute(null::<c_void>()))
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_pop(L: *lua_State, idx: c_int)
 {
     lua_settop(L, -idx - 1)
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_newtable(L: *lua_State)
 {
     lua_createtable(L, 0, 0)
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_pushcfunction(L: *lua_State, f: lua_CFunction)
 {
     lua_pushcclosure(L, f, 0)
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_register(L: *lua_State, var: *c_char, f: lua_CFunction)
 {
     lua_pushcfunction(L, f);
     lua_setglobal(L, var)
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_isfunction(L: *lua_State, idx: c_int) -> bool
 {
     lua_type(L, idx) == LUA_TFUNCTION
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_istable(L: *lua_State, idx: c_int) -> bool
 {
     lua_type(L, idx) == LUA_TTABLE
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_islightuserdata(L: *lua_State, idx: c_int) -> bool
 {
     lua_type(L, idx) == LUA_TLIGHTUSERDATA
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_isnil(L: *lua_State, idx: c_int) -> bool
 {
     lua_type(L, idx) == LUA_TNIL
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_isboolean(L: *lua_State, idx: c_int) -> bool
 {
     lua_type(L, idx) == LUA_TBOOLEAN
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_isthread(L: *lua_State, idx: c_int) -> bool
 {
     lua_type(L, idx) == LUA_TTHREAD
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_isnone(L: *lua_State, idx: c_int) -> bool
 {
     lua_type(L, idx) == LUA_TNONE
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_isnoneornil(L: *lua_State, idx: c_int) -> bool
 {
     lua_type(L, idx) <= 0
 }
 
-#[fixed_stack_segment]
 pub unsafe fn lua_pushglobaltable(L: *lua_State)
 {
     lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS)
 }
 
-#[fixed_stack_segment]
 pub unsafe fn luaL_loadfile(L: *lua_State, filename: *c_char) -> c_int
 {
     luaL_loadfilex(L, filename, transmute(null::<c_void>()))

@@ -5,7 +5,6 @@
     package_id = "liblua"
 )];
 
-#[author = "KokaKiwi <kokakiwi@kokakiwi.net>"];
 #[license = "MIT"];
 
 #[crate_type = "lib"];

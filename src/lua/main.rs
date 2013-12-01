@@ -4,7 +4,6 @@
     uuid = "2221d732-c740-464d-a470-292ac42d6c52"
 )];
 
-#[author = "KokaKiwi <kokakiwi@kokakiwi.net>"];
 #[license = "MIT"];
 
 #[crate_type = "bin"];

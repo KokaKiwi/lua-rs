@@ -25,7 +25,6 @@ impl<'self> State<'self>
      *
      *  When this struct is dropped, the state is closed, and is not usable anymore.
      */
-    #[fixed_stack_segment]
     pub fn new() -> State
     {
         State {
@@ -54,14 +53,12 @@ impl<'self> State<'self>
      *
      *  Marked as unsafe as the pointer is not usable anymore after this function call.
      */
-    #[fixed_stack_segment]
     pub unsafe fn close(&mut self)
     {
         ffi::lua_close(self.L);
     }
 
     /// Load lua standard libraries.
-    #[fixed_stack_segment]
     pub fn load_stdlibs(&self)
     {
         unsafe
@@ -71,7 +68,6 @@ impl<'self> State<'self>
     }
 
     /// Get type of a stack element at specified index.
-    #[fixed_stack_segment]
     pub fn get_type(&self, idx: int) -> LuaType
     {
         let ty = unsafe {
@@ -81,7 +77,6 @@ impl<'self> State<'self>
     }
 
     /// Create a new Lua thread.
-    #[fixed_stack_segment]
     pub fn new_thread(&self) -> State
     {
         unsafe
@@ -91,7 +86,6 @@ impl<'self> State<'self>
     }
 
     /// Get Lua version.
-    #[fixed_stack_segment]
     pub fn version(&self) -> int
     {
         unsafe
@@ -101,7 +95,6 @@ impl<'self> State<'self>
     }
 
     /// Pop a stack element specified by his index.
-    #[fixed_stack_segment]
     pub fn pop(&self, idx: int)
     {
         unsafe
@@ -111,7 +104,6 @@ impl<'self> State<'self>
     }
 
     /// Get global value. Push to the stack.
-    #[fixed_stack_segment]
     pub fn get_global(&self, name: &str)
     {
         unsafe
@@ -123,7 +115,6 @@ impl<'self> State<'self>
     }
 
     /// Set global value. Pop from the stack.
-    #[fixed_stack_segment]
     pub fn set_global(&self, name: &str)
     {
         unsafe
@@ -135,7 +126,6 @@ impl<'self> State<'self>
     }
 
     /// Get field value. Push to the stack.
-    #[fixed_stack_segment]
     pub fn get_field(&self, idx: int, name: &str)
     {
         unsafe
@@ -147,7 +137,6 @@ impl<'self> State<'self>
     }
 
     /// Set field value. Pop from the stack.
-    #[fixed_stack_segment]
     pub fn set_field(&self, idx: int, name: &str)
     {
         unsafe
@@ -158,7 +147,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn load_file(&self, filename: &str) -> LuaStatus
     {
         let status = unsafe {
@@ -172,7 +160,6 @@ impl<'self> State<'self>
         LuaStatus::from_lua(status)
     }
 
-    #[fixed_stack_segment]
     pub fn load_str(&self, source: &str) -> LuaStatus
     {
         let status = unsafe {
@@ -186,7 +173,6 @@ impl<'self> State<'self>
         LuaStatus::from_lua(status)
     }
 
-    #[fixed_stack_segment]
     pub fn pcall(&self, nargs: int, nresults: int, errfunc: int) -> LuaStatus
     {
         let status = unsafe {
@@ -202,7 +188,6 @@ impl<'self> State<'self>
     }
 
     // Stack functions
-    #[fixed_stack_segment]
     pub fn upvalue_index(i: int) -> int
     {
         unsafe
@@ -212,7 +197,6 @@ impl<'self> State<'self>
     }
 
     /// Get index of the stack's top.
-    #[fixed_stack_segment]
     pub fn get_top(&self) -> int
     {
         unsafe
@@ -222,7 +206,6 @@ impl<'self> State<'self>
     }
 
     /// Set index of the stack's top.
-    #[fixed_stack_segment]
     pub fn set_top(&self, idx: int)
     {
         unsafe
@@ -232,7 +215,6 @@ impl<'self> State<'self>
     }
 
     /// Removes the element at the given valid index.
-    #[fixed_stack_segment]
     pub fn remove(&self, idx: int)
     {
         unsafe
@@ -242,7 +224,6 @@ impl<'self> State<'self>
     }
 
     // Table functions
-    #[fixed_stack_segment]
     pub fn new_table(&self)
     {
         unsafe
@@ -251,7 +232,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn create_table(&self, narr: int, nrec: int)
     {
         unsafe
@@ -260,7 +240,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn set_table(&self, idx: int)
     {
         unsafe
@@ -269,7 +248,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn raw_set(&self, idx: int)
     {
         unsafe
@@ -278,7 +256,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn raw_set_index(&self, idx: int, i: int)
     {
         unsafe
@@ -287,7 +264,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn next(&self, idx: int) -> bool
     {
         unsafe
@@ -296,7 +272,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn len(&self, idx: int) -> int
     {
         unsafe
@@ -310,7 +285,6 @@ impl<'self> State<'self>
         len
     }
 
-    #[fixed_stack_segment]
     pub fn get_metatable(&self, idx: int) -> bool
     {
         unsafe
@@ -319,7 +293,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn set_metatable(&self, idx: int)
     {
         unsafe
@@ -330,7 +303,6 @@ impl<'self> State<'self>
 
     // Push functions
 
-    #[fixed_stack_segment]
     pub fn push_nil(&self)
     {
         unsafe
@@ -339,7 +311,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn push_float(&self, n: f64)
     {
         unsafe
@@ -348,7 +319,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn push_int(&self, n: int)
     {
         unsafe
@@ -357,7 +327,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn push_uint(&self, n: uint)
     {
         unsafe
@@ -366,7 +335,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn push_str(&self, s: &str)
     {
         unsafe
@@ -377,7 +345,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn push_bool(&self, b: bool)
     {
         unsafe
@@ -387,7 +354,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn push_userdata<T>(&self, p: *T)
     {
         unsafe
@@ -396,7 +362,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn push_cclosure(&self, f: ffi::lua_CFunction, n: int)
     {
         unsafe
@@ -405,7 +370,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn push_cfunction(&self, f: ffi::lua_CFunction)
     {
         unsafe
@@ -422,7 +386,6 @@ impl<'self> State<'self>
 
     // Get functions
 
-    #[fixed_stack_segment]
     pub fn get_float(&self, idx: int) -> f64
     {
         unsafe
@@ -431,7 +394,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn get_int(&self, idx: int) -> int
     {
         unsafe
@@ -440,7 +402,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn get_uint(&self, idx: int) -> uint
     {
         unsafe
@@ -449,7 +410,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn get_str(&self, idx: int) -> ~str
     {
         unsafe
@@ -459,7 +419,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn get_bool(&self, idx: int) -> bool
     {
         unsafe
@@ -468,7 +427,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn get_userdata<T>(&self, idx: int) -> *T
     {
         unsafe
@@ -477,7 +435,6 @@ impl<'self> State<'self>
         }
     }
 
-    #[fixed_stack_segment]
     pub fn get_cfunction(&self, idx: int) -> ffi::lua_CFunction
     {
         unsafe
@@ -487,7 +444,6 @@ impl<'self> State<'self>
     }
 
     // Function related functions
-    #[fixed_stack_segment]
     pub fn register(&self, name: &str, f: ffi::lua_CFunction)
     {
         unsafe
@@ -499,7 +455,6 @@ impl<'self> State<'self>
     }
 
     // Misc functions
-    #[fixed_stack_segment]
     pub fn error(&self) -> int
     {
         unsafe
