@@ -7,12 +7,12 @@ use status::{LuaStatus, LuaOk};
  *
  *  The goal is to provide unified API in order to interact with Lua in a transparent way.
  */
-pub struct Lua<'self>
+pub struct Lua<'a>
 {
-    state: State<'self>,
+    state: State<'a>,
 }
 
-impl<'self> Lua<'self>
+impl<'a> Lua<'a>
 {
     pub fn new() -> Lua
     {

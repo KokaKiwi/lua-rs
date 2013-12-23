@@ -12,13 +12,13 @@ use lua::Lua;
  *
  *  The goal is to provide some functions which don't need to be called in unsafe block everytime we want to call them.
  */
-pub struct State<'self>
+pub struct State<'a>
 {
     priv L: *ffi::lua_State,
     priv managed: bool,
 }
 
-impl<'self> State<'self>
+impl<'a> State<'a>
 {
     /**
      *  Create a new Lua state, which is managed by this struct.
@@ -378,7 +378,7 @@ impl<'self> State<'self>
         }
     }
 
-    pub fn push_function(&self, f: fn(l: &'self Lua) -> int)
+    pub fn push_function(&self, f: fn(l: &'a Lua) -> int)
     {
         self.push_userdata(f as *());
         self.push_cclosure(_lua_state_closure, 1);
@@ -479,7 +479,7 @@ extern "C" fn _lua_state_closure(L: *ffi::lua_State) -> c_int
     f(&lua) as c_int
 }
 
-impl<'self> Drop for State<'self>
+impl<'a> Drop for State<'a>
 {
     fn drop(&mut self)
     {

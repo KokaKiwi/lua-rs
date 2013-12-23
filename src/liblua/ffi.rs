@@ -118,7 +118,7 @@ pub static LUA_MASKRET: c_int = 1 << LUA_HOOKRET;
 pub static LUA_MASKLINE: c_int = 1 << LUA_HOOKLINE;
 pub static LUA_MASKCOUNT: c_int = 1 << LUA_HOOKCOUNT;
 
-#[link_args = "-llua"]
+#[link(name = "lua")]
 extern
 {
     // State manipulation
