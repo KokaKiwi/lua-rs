@@ -1,12 +1,7 @@
-#[link(
-    name = "lua",
-    vers = "0.1.0",
-    uuid = "2221d732-c740-464d-a470-292ac42d6c52"
-)];
-
 #[license = "MIT"];
 
 #[crate_type = "bin"];
+#[crate_id = "lua#0.1.0"];
 
 #[feature(globs)];
 #[feature(macro_rules)];
