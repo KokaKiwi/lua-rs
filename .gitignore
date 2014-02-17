@@ -1,6 +1,12 @@
-# Rust stuff
-/.rust_build
-/lib
-/doc
+# Build stuff
+*.o
+*.so
+*.a
+*.rlib
 
-/lua
+/rlua
+
+# Misc stuff
+.*
+!.gitignore
+!.editorconfig

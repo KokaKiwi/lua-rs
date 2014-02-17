@@ -1,7 +1,6 @@
-#[license = "MIT"];
-
-#[crate_id = "github.com/KokaKiwi/lua#0.2.1"];
+#[crate_id = "rlua#0.3.0"];
 #[crate_type = "lib"];
+#[license = "MIT"];
 
 #[feature(globs)];
 #[feature(macro_rules)];
@@ -16,3 +15,5 @@ pub mod state;
 pub mod traits;
 pub mod types;
 pub mod status;
+
+pub mod macros;
