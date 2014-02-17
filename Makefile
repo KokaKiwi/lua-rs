@@ -55,7 +55,7 @@ LUA_IGNORE_SOURCES		=	\
 
 LUA_SOURCES				=	$(filter-out $(foreach src,$(LUA_IGNORE_SOURCES),$(LUA_DIRNAME)/src/$(src)),$(wildcard $(LUA_DIRNAME)/src/*.c))
 LUA_OBJECTS				=	$(LUA_SOURCES:.c=.o)
-LUA_LIBNAME				=	$(RUST_LIBDIR)/liblua-$(LUA_VERSION).a
+LUA_LIBNAME				=	$(RUST_LIBDIR)/liblua.a
 
 all:					liblua
 
