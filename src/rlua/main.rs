@@ -4,7 +4,7 @@
 
 #[feature(globs)];
 
-extern mod rlua;
+extern crate rlua;
 
 fn main()
 {
