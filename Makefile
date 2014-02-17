@@ -1,6 +1,7 @@
 # Paths
 CC						?=	gcc
 RUSTC					=	rustc
+RUSTDOC					=	rustdoc
 AR						=	ar
 RANLIB					=	ranlib
 
@@ -8,10 +9,14 @@ RANLIB					=	ranlib
 CFLAGS					=	-fPIC
 CCFLAGS					=	$(CFLAGS)
 LDFLAGS					=	$(CFLAGS)
-RUSTCFLAGS				=	-L lib
+RUSTCFLAGS				=	-L $(RUST_LIBDIR)
+RUSTDOCFLAGS			=
 
 # Variables
 DEBUG					=	0
+
+RUST_LIBDIR				=	lib
+RUST_DOCDIR				=	doc
 
 ifeq ($(DEBUG),1)
 CFLAGS					+=	-ggdb3
@@ -36,6 +41,8 @@ test:
 
 bench:
 
+doc:
+
 # Common rules
 %.o:							%.c
 	$(CC) $(CCFLAGS) -c -o $@ $^
@@ -48,7 +55,7 @@ LUA_IGNORE_SOURCES		=	\
 
 LUA_SOURCES				=	$(filter-out $(foreach src,$(LUA_IGNORE_SOURCES),$(LUA_DIRNAME)/src/$(src)),$(wildcard $(LUA_DIRNAME)/src/*.c))
 LUA_OBJECTS				=	$(LUA_SOURCES:.c=.o)
-LUA_LIBNAME				=	lib/liblua-$(LUA_VERSION).a
+LUA_LIBNAME				=	$(RUST_LIBDIR)/liblua-$(LUA_VERSION).a
 
 all:					liblua
 
@@ -62,18 +69,19 @@ clean_liblua:
 clean:					clean_liblua
 
 $(LUA_LIBNAME):				$(LUA_OBJECTS)
-	@mkdir -p lib
+	@mkdir -p $(RUST_LIBDIR)
 	$(AR) rc $(LUA_LIBNAME) $(LUA_OBJECTS)
 	$(RANLIB) $(LUA_LIBNAME)
 
 # Rust lib
 LIBRLUA_DIRNAME			=	src/librlua
+LIBRLUA_DOCDIR			=	$(RUST_DOCDIR)/librlua
 LIBRLUA_RUSTCFLAGS		=	--crate-type rlib,dylib,staticlib
 LIBRLUA_RUSTC			=	$(RUSTC) $(RUSTCFLAGS) $(LIBRLUA_RUSTCFLAGS)
 
 LIBRLUA_SOURCES			=	$(wildcard $(LIBRLUA_DIRNAME)/*.rs)
 LIBRLUA_ROOT			=	$(LIBRLUA_DIRNAME)/lib.rs
-LIBRLUA_NAMES			=	$(addprefix lib/,$(shell $(LIBRLUA_RUSTC) --crate-file-name $(LIBRLUA_ROOT)))
+LIBRLUA_NAMES			=	$(addprefix $(RUST_LIBDIR)/,$(shell $(LIBRLUA_RUSTC) --crate-file-name $(LIBRLUA_ROOT)))
 LIBRLUA_LIBNAME			=	$(firstword $(LIBRLUA_NAMES))
 LIBRLUA_LIBNAME_TEST	=	test_librlua
 
@@ -99,9 +107,14 @@ _bench_librlua:			$(LIBRLUA_LIBNAME_TEST)
 .PHONY:					_bench_librlua
 bench:					_bench_librlua
 
+_doc_librlua:			$(LIBRLUA_SOURCES)
+	@mkdir -p $(LIBRLUA_DOCDIR)
+	$(RUSTDOC) $(RUSTDOCFLAGS) -o $(LIBRLUA_DOCDIR) $(LIBRLUA_ROOT)
+doc:					_doc_librlua
+
 $(LIBRLUA_LIBNAME):		$(LUA_LIBNAME) $(LIBRLUA_SOURCES)
-	@mkdir -p lib
-	$(LIBRLUA_RUSTC) --out-dir lib $(LIBRLUA_ROOT)
+	@mkdir -p $(RUST_LIBDIR)
+	$(LIBRLUA_RUSTC) --out-dir $(RUST_LIBDIR) $(LIBRLUA_ROOT)
 
 $(LIBRLUA_LIBNAME_TEST):$(LUA_LIBNAME) $(LIBRLUA_SOURCES)
 	$(LIBRLUA_RUSTC) --test -o $(LIBRLUA_LIBNAME_TEST) $(LIBRLUA_ROOT)
@@ -127,5 +140,5 @@ clean_rlua:
 clean:					clean_rlua
 
 $(RLUA_NAME):		$(LIBRLUA_LIBNAME) $(RLUA_SOURCES)
-	@mkdir -p lib
+	@mkdir -p $(RUST_LIBDIR)
 	$(RLUA_RUSTC) $(RLUA_ROOT)

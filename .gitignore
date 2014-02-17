@@ -5,6 +5,7 @@
 *.rlib
 
 /rlua
+/doc
 
 # Misc stuff
 .*
