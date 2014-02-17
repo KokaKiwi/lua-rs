@@ -75,7 +75,7 @@ $(LUA_LIBNAME):				$(LUA_OBJECTS)
 
 # Rust lib
 LIBRLUA_DIRNAME			=	src/librlua
-LIBRLUA_DOCDIR			=	$(RUST_DOCDIR)/librlua
+LIBRLUA_DOCDIR			=	$(RUST_DOCDIR)
 LIBRLUA_RUSTCFLAGS		=	--crate-type rlib,dylib,staticlib
 LIBRLUA_RUSTC			=	$(RUSTC) $(RUSTCFLAGS) $(LIBRLUA_RUSTCFLAGS)
 
