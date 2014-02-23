@@ -1,6 +1,7 @@
 use std::libc::*;
 use std::cast::transmute;
 use std::hashmap::HashMap;
+use std::hash::Hash;
 
 use state::State;
 use types::*;
@@ -185,7 +186,7 @@ impl ToLua for fn(l: &Lua) -> int
 }
 
 // HashMap
-impl<K: ToLua + Hash + Eq, V: ToLua> ToLua for HashMap<K, V>
+impl<K: ToLua + Hash + IterBytes + Eq, V: ToLua> ToLua for HashMap<K, V>
 {
     fn to_lua(&self, state: &State)
     {
@@ -200,7 +201,7 @@ impl<K: ToLua + Hash + Eq, V: ToLua> ToLua for HashMap<K, V>
     }
 }
 
-impl<K: FromLua + Hash + Eq, V: FromLua> FromLua for HashMap<K, V>
+impl<K: FromLua + Hash + IterBytes + Eq, V: FromLua> FromLua for HashMap<K, V>
 {
     fn from_lua(state: &State, idx: int) -> Option<HashMap<K, V>>
     {
