@@ -5,6 +5,8 @@
 #[feature(globs)];
 #[feature(macro_rules)];
 
+extern crate collections;
+
 pub use lua::Lua;
 
 #[allow(non_camel_case_types)]

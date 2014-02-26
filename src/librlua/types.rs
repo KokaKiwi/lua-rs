@@ -1,4 +1,5 @@
 use std::libc::*;
+use std::fmt;
 
 use ffi;
 
@@ -39,12 +40,11 @@ impl LuaType
     }
 }
 
-impl ToStr for LuaType
+impl fmt::Show for LuaType
 {
-    fn to_str(&self) -> ~str
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result
     {
-        match *self
-        {
+        let s = match *self {
             LuaNone => ~"None",
             LuaNil => ~"Nil",
             LuaBoolean => ~"Boolean",
@@ -56,6 +56,28 @@ impl ToStr for LuaType
             LuaUserData => ~"User data",
             LuaThread => ~"Thread",
             LuaUnknown(ty) => format!("Unknown({})", ty),
-        }
+        };
+        f.pad(s)
     }
 }
+
+// impl ToStr for LuaType
+// {
+//     fn to_str(&self) -> ~str
+//     {
+//         match *self
+//         {
+//             LuaNone => ~"None",
+//             LuaNil => ~"Nil",
+//             LuaBoolean => ~"Boolean",
+//             LuaLightUserData => ~"Light User data",
+//             LuaNumber => ~"Number",
+//             LuaString => ~"String",
+//             LuaTable => ~"Table",
+//             LuaFunction => ~"Function",
+//             LuaUserData => ~"User data",
+//             LuaThread => ~"Thread",
+//             LuaUnknown(ty) => format!("Unknown({})", ty),
+//         }
+//     }
+// }

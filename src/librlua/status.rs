@@ -1,4 +1,5 @@
 use std::libc::*;
+use std::fmt;
 
 use ffi;
 
@@ -46,13 +47,13 @@ impl LuaError
     }
 }
 
-impl ToStr for LuaError
+impl fmt::Show for LuaError
 {
-    fn to_str(&self) -> ~str
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result
     {
-        match *self
-        {
-            _ => ~""
-        }
+        let s = match *self {
+            _ => ~"",
+        };
+        f.pad(s)
     }
 }
