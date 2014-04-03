@@ -1,4 +1,4 @@
-use std::libc::*;
+use std::libc::c_int;
 use std::fmt;
 
 use ffi;

@@ -1,4 +1,4 @@
-use std::libc::*;
+use std::libc::c_int;
 use std::cast::transmute;
 use std::str::raw;
 
@@ -107,69 +107,49 @@ impl<'a> State<'a>
     /// Get global value. Push to the stack.
     pub fn get_global(&self, name: &str)
     {
-        unsafe
-        {
-            let c_name = name.to_c_str().unwrap();
-            ffi::lua_getglobal(self.raw, c_name);
-            free(transmute(c_name));
-        }
+        name.with_c_str(|name| unsafe {
+            ffi::lua_getglobal(self.raw, name);
+        });
     }
 
     /// Set global value. Pop from the stack.
     pub fn set_global(&self, name: &str)
     {
-        unsafe
-        {
-            let c_name = name.to_c_str().unwrap();
-            ffi::lua_setglobal(self.raw, c_name);
-            free(transmute(c_name));
-        }
+        name.with_c_str(|name| unsafe {
+            ffi::lua_setglobal(self.raw, name);
+        });
     }
 
     /// Get field value. Push to the stack.
     pub fn get_field(&self, idx: int, name: &str)
     {
-        unsafe
-        {
-            let c_name = name.to_c_str().unwrap();
-            ffi::lua_getfield(self.raw, idx as c_int, c_name);
-            free(transmute(c_name));
-        }
+        name.with_c_str(|name| unsafe {
+            ffi::lua_getfield(self.raw, idx as c_int, name);
+        });
     }
 
     /// Set field value. Pop from the stack.
     pub fn set_field(&self, idx: int, name: &str)
     {
-        unsafe
-        {
-            let c_name = name.to_c_str().unwrap();
-            ffi::lua_setfield(self.raw, idx as c_int, c_name);
-            free(transmute(c_name));
-        }
+        name.with_c_str(|name| unsafe {
+            ffi::lua_setfield(self.raw, idx as c_int, name);
+        });
     }
 
     pub fn load_file(&self, filename: &str) -> LuaStatus
     {
-        let status = unsafe {
-            let filename = filename.to_c_str().unwrap();
-            let status = ffi::luaL_loadfile(self.raw, filename);
-            free(transmute(filename));
-
-            status
-        };
+        let status = filename.with_c_str(|filename| unsafe {
+            ffi::luaL_loadfile(self.raw, filename)
+        });
 
         LuaStatus::from_lua(status)
     }
 
     pub fn load_str(&self, source: &str) -> LuaStatus
     {
-        let status = unsafe {
-            let source = source.to_c_str().unwrap();
-            let status = ffi::luaL_loadstring(self.raw, source);
-            free(transmute(source));
-
-            status
-        };
+        let status = source.with_c_str(|source| unsafe {
+            ffi::luaL_loadstring(self.raw, source)
+        });
 
         LuaStatus::from_lua(status)
     }
@@ -338,12 +318,9 @@ impl<'a> State<'a>
 
     pub fn push_str(&self, s: &str)
     {
-        unsafe
-        {
-            let c_str = s.to_c_str().unwrap();
-            ffi::lua_pushstring(self.raw, c_str);
-            free(transmute(c_str));
-        }
+        s.with_c_str(|s| unsafe {
+            ffi::lua_pushstring(self.raw, s);
+        });
     }
 
     pub fn push_bool(&self, b: bool)
@@ -447,12 +424,9 @@ impl<'a> State<'a>
     // Function related functions
     pub fn register(&self, name: &str, f: ffi::lua_CFunction)
     {
-        unsafe
-        {
-            let c_name = name.to_c_str().unwrap();
-            ffi::lua_register(self.raw, c_name, f);
-            free(transmute(c_name));
-        }
+        name.with_c_str(|name| unsafe {
+            ffi::lua_register(self.raw, name, f);
+        });
     }
 
     // Misc functions

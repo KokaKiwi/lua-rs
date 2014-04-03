@@ -1,4 +1,4 @@
-use std::libc::*;
+use std::libc::c_int;
 use std::fmt;
 
 use ffi;
@@ -60,24 +60,3 @@ impl fmt::Show for LuaType
         f.pad(s)
     }
 }
-
-// impl ToStr for LuaType
-// {
-//     fn to_str(&self) -> ~str
-//     {
-//         match *self
-//         {
-//             LuaNone => ~"None",
-//             LuaNil => ~"Nil",
-//             LuaBoolean => ~"Boolean",
-//             LuaLightUserData => ~"Light User data",
-//             LuaNumber => ~"Number",
-//             LuaString => ~"String",
-//             LuaTable => ~"Table",
-//             LuaFunction => ~"Function",
-//             LuaUserData => ~"User data",
-//             LuaThread => ~"Thread",
-//             LuaUnknown(ty) => format!("Unknown({})", ty),
-//         }
-//     }
-// }
