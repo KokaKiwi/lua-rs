@@ -52,6 +52,11 @@ impl fmt::Show for LuaError
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result
     {
         let s = match *self {
+            RuntimeError => ~"Runtime error",
+            MemoryError => ~"Memory eror",
+            GCError => ~"GC error",
+            SyntaxError => ~"Syntax error",
+            FileError => ~"File error",
             _ => ~"",
         };
         f.pad(s)

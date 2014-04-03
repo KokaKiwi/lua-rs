@@ -28,11 +28,16 @@ impl<'a> State<'a>
      */
     pub fn new() -> State
     {
-        State {
-            raw: unsafe {
-                ffi::luaL_newstate()
+        let raw = unsafe {
+            ffi::luaL_newstate()
+        };
+
+        match raw.is_null() {
+            true => fail!("Can't create new Lua state!"),
+            false => State {
+                raw: raw,
+                managed: true,
             },
-            managed: true,
         }
     }
 
