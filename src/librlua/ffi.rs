@@ -7,21 +7,21 @@ pub struct lua_State;
 
 pub struct lua_Debug
 {
-    event: c_int,
-    name: *c_char,
-    namewhar: *c_char,
-    what: *c_char,
-    source: *c_char,
-    currentline: c_int,
-    linedefined: c_int,
-    lastlinedefined: c_int,
-    nups: c_uchar,
-    nparams: c_uchar,
-    isvararg: c_char,
-    istailcall: c_char,
-    short_src: [c_char, ..LUA_IDSIZE],
+    pub event: c_int,
+    pub name: *c_char,
+    pub namewhar: *c_char,
+    pub what: *c_char,
+    pub source: *c_char,
+    pub currentline: c_int,
+    pub linedefined: c_int,
+    pub lastlinedefined: c_int,
+    pub nups: c_uchar,
+    pub nparams: c_uchar,
+    pub isvararg: c_char,
+    pub istailcall: c_char,
+    pub short_src: [c_char, ..LUA_IDSIZE],
 
-    priv i_ci: *c_void,
+    i_ci: *c_void,
 }
 
 pub type lua_CFunction = extern "C" fn(L: *lua_State) -> c_int;

@@ -12,10 +12,11 @@ use lua::Lua;
  *
  *  The goal is to provide some functions which don't need to be called in unsafe block everytime we want to call them.
  */
+#[allow(uppercase_variables)]
 pub struct State<'a>
 {
-    priv L: *ffi::lua_State,
-    priv managed: bool,
+    raw: *ffi::lua_State,
+    managed: bool,
 }
 
 impl<'a> State<'a>
@@ -28,7 +29,7 @@ impl<'a> State<'a>
     pub fn new() -> State
     {
         State {
-            L: unsafe {
+            raw: unsafe {
                 ffi::luaL_newstate()
             },
             managed: true,
@@ -40,10 +41,10 @@ impl<'a> State<'a>
      *
      *  Marked as unsafe as we know nothing about this Lua state lifetime.
      */
-    pub unsafe fn from_ffi(L: *ffi::lua_State) -> State
+    pub unsafe fn from_ffi(raw: *ffi::lua_State) -> State
     {
         State {
-            L: L,
+            raw: raw,
             managed: false,
         }
     }
@@ -55,7 +56,7 @@ impl<'a> State<'a>
      */
     pub unsafe fn close(&mut self)
     {
-        ffi::lua_close(self.L);
+        ffi::lua_close(self.raw);
     }
 
     /// Load lua standard libraries.
@@ -63,7 +64,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::luaL_openlibs(self.L);
+            ffi::luaL_openlibs(self.raw);
         }
     }
 
@@ -71,7 +72,7 @@ impl<'a> State<'a>
     pub fn get_type(&self, idx: int) -> LuaType
     {
         let ty = unsafe {
-            ffi::lua_type(self.L, idx as c_int)
+            ffi::lua_type(self.raw, idx as c_int)
         };
         LuaType::from_lua(ty)
     }
@@ -81,7 +82,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            State::from_ffi(ffi::lua_newthread(self.L))
+            State::from_ffi(ffi::lua_newthread(self.raw))
         }
     }
 
@@ -90,7 +91,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_version(self.L) as int
+            ffi::lua_version(self.raw) as int
         }
     }
 
@@ -99,7 +100,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_pop(self.L, idx as c_int);
+            ffi::lua_pop(self.raw, idx as c_int);
         }
     }
 
@@ -109,7 +110,7 @@ impl<'a> State<'a>
         unsafe
         {
             let c_name = name.to_c_str().unwrap();
-            ffi::lua_getglobal(self.L, c_name);
+            ffi::lua_getglobal(self.raw, c_name);
             free(transmute(c_name));
         }
     }
@@ -120,7 +121,7 @@ impl<'a> State<'a>
         unsafe
         {
             let c_name = name.to_c_str().unwrap();
-            ffi::lua_setglobal(self.L, c_name);
+            ffi::lua_setglobal(self.raw, c_name);
             free(transmute(c_name));
         }
     }
@@ -131,7 +132,7 @@ impl<'a> State<'a>
         unsafe
         {
             let c_name = name.to_c_str().unwrap();
-            ffi::lua_getfield(self.L, idx as c_int, c_name);
+            ffi::lua_getfield(self.raw, idx as c_int, c_name);
             free(transmute(c_name));
         }
     }
@@ -142,7 +143,7 @@ impl<'a> State<'a>
         unsafe
         {
             let c_name = name.to_c_str().unwrap();
-            ffi::lua_setfield(self.L, idx as c_int, c_name);
+            ffi::lua_setfield(self.raw, idx as c_int, c_name);
             free(transmute(c_name));
         }
     }
@@ -151,7 +152,7 @@ impl<'a> State<'a>
     {
         let status = unsafe {
             let filename = filename.to_c_str().unwrap();
-            let status = ffi::luaL_loadfile(self.L, filename);
+            let status = ffi::luaL_loadfile(self.raw, filename);
             free(transmute(filename));
 
             status
@@ -164,7 +165,7 @@ impl<'a> State<'a>
     {
         let status = unsafe {
             let source = source.to_c_str().unwrap();
-            let status = ffi::luaL_loadstring(self.L, source);
+            let status = ffi::luaL_loadstring(self.raw, source);
             free(transmute(source));
 
             status
@@ -176,7 +177,7 @@ impl<'a> State<'a>
     pub fn pcall(&self, nargs: int, nresults: int, errfunc: int) -> LuaStatus
     {
         let status = unsafe {
-            ffi::lua_pcall(self.L, nargs as c_int, nresults as c_int, errfunc as c_int)
+            ffi::lua_pcall(self.raw, nargs as c_int, nresults as c_int, errfunc as c_int)
         };
 
         LuaStatus::from_lua(status)
@@ -201,7 +202,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_gettop(self.L) as int
+            ffi::lua_gettop(self.raw) as int
         }
     }
 
@@ -210,7 +211,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_settop(self.L, idx as c_int);
+            ffi::lua_settop(self.raw, idx as c_int);
         }
     }
 
@@ -219,7 +220,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_remove(self.L, idx as c_int);
+            ffi::lua_remove(self.raw, idx as c_int);
         }
     }
 
@@ -228,7 +229,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_newtable(self.L);
+            ffi::lua_newtable(self.raw);
         }
     }
 
@@ -236,7 +237,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_createtable(self.L, narr as c_int, nrec as c_int);
+            ffi::lua_createtable(self.raw, narr as c_int, nrec as c_int);
         }
     }
 
@@ -244,7 +245,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_settable(self.L, idx as c_int);
+            ffi::lua_settable(self.raw, idx as c_int);
         }
     }
 
@@ -252,7 +253,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_rawset(self.L, idx as c_int);
+            ffi::lua_rawset(self.raw, idx as c_int);
         }
     }
 
@@ -260,7 +261,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_rawseti(self.L, idx as c_int, i as c_int);
+            ffi::lua_rawseti(self.raw, idx as c_int, i as c_int);
         }
     }
 
@@ -268,7 +269,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_next(self.L, idx as c_int) != 0
+            ffi::lua_next(self.raw, idx as c_int) != 0
         }
     }
 
@@ -276,7 +277,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_len(self.L, idx as c_int);
+            ffi::lua_len(self.raw, idx as c_int);
         }
 
         let len = self.get_int(-1);
@@ -289,7 +290,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_getmetatable(self.L, idx as c_int) != 0
+            ffi::lua_getmetatable(self.raw, idx as c_int) != 0
         }
     }
 
@@ -297,7 +298,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_setmetatable(self.L, idx as c_int);
+            ffi::lua_setmetatable(self.raw, idx as c_int);
         }
     }
 
@@ -307,7 +308,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_pushnil(self.L);
+            ffi::lua_pushnil(self.raw);
         }
     }
 
@@ -315,7 +316,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_pushnumber(self.L, n as ffi::lua_Number);
+            ffi::lua_pushnumber(self.raw, n as ffi::lua_Number);
         }
     }
 
@@ -323,7 +324,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_pushinteger(self.L, n as ffi::lua_Integer);
+            ffi::lua_pushinteger(self.raw, n as ffi::lua_Integer);
         }
     }
 
@@ -331,7 +332,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_pushunsigned(self.L, n as ffi::lua_Unsigned);
+            ffi::lua_pushunsigned(self.raw, n as ffi::lua_Unsigned);
         }
     }
 
@@ -340,7 +341,7 @@ impl<'a> State<'a>
         unsafe
         {
             let c_str = s.to_c_str().unwrap();
-            ffi::lua_pushstring(self.L, c_str);
+            ffi::lua_pushstring(self.raw, c_str);
             free(transmute(c_str));
         }
     }
@@ -350,7 +351,7 @@ impl<'a> State<'a>
         unsafe
         {
             let n = if b { 1 } else { 0 };
-            ffi::lua_pushboolean(self.L, n);
+            ffi::lua_pushboolean(self.raw, n);
         }
     }
 
@@ -358,7 +359,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_pushlightuserdata(self.L, transmute(p));
+            ffi::lua_pushlightuserdata(self.raw, transmute(p));
         }
     }
 
@@ -366,7 +367,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_pushcclosure(self.L, f, n as c_int);
+            ffi::lua_pushcclosure(self.raw, f, n as c_int);
         }
     }
 
@@ -374,7 +375,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_pushcfunction(self.L, f);
+            ffi::lua_pushcfunction(self.raw, f);
         }
     }
 
@@ -390,7 +391,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_tonumber(self.L, idx as c_int) as f64
+            ffi::lua_tonumber(self.raw, idx as c_int) as f64
         }
     }
 
@@ -398,7 +399,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_tointeger(self.L, idx as c_int) as int
+            ffi::lua_tointeger(self.raw, idx as c_int) as int
         }
     }
 
@@ -406,7 +407,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_tounsigned(self.L, idx as c_int) as uint
+            ffi::lua_tounsigned(self.raw, idx as c_int) as uint
         }
     }
 
@@ -414,7 +415,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            let c_str = ffi::lua_tostring(self.L, idx as c_int);
+            let c_str = ffi::lua_tostring(self.raw, idx as c_int);
             raw::from_c_str(c_str)
         }
     }
@@ -423,7 +424,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_toboolean(self.L, idx as c_int) != 0
+            ffi::lua_toboolean(self.raw, idx as c_int) != 0
         }
     }
 
@@ -431,7 +432,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            transmute(ffi::lua_touserdata(self.L, idx as c_int))
+            transmute(ffi::lua_touserdata(self.raw, idx as c_int))
         }
     }
 
@@ -439,7 +440,7 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_tocfunction(self.L, idx as c_int)
+            ffi::lua_tocfunction(self.raw, idx as c_int)
         }
     }
 
@@ -449,7 +450,7 @@ impl<'a> State<'a>
         unsafe
         {
             let c_name = name.to_c_str().unwrap();
-            ffi::lua_register(self.L, c_name, f);
+            ffi::lua_register(self.raw, c_name, f);
             free(transmute(c_name));
         }
     }
@@ -459,16 +460,16 @@ impl<'a> State<'a>
     {
         unsafe
         {
-            ffi::lua_error(self.L) as int
+            ffi::lua_error(self.raw) as int
         }
     }
 }
 
-extern "C" fn _lua_state_closure(L: *ffi::lua_State) -> c_int
+extern "C" fn _lua_state_closure(raw: *ffi::lua_State) -> c_int
 {
     let lua = Lua {
         state: unsafe {
-            State::from_ffi(L)
+            State::from_ffi(raw)
         },
     };
     let f: fn(l: &Lua) -> int = match lua.get_arg(0) {

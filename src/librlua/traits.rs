@@ -186,7 +186,7 @@ impl ToLua for fn(l: &Lua) -> int
 }
 
 // HashMap
-impl<K: ToLua + Hash + Eq, V: ToLua> ToLua for HashMap<K, V>
+impl<K: ToLua + Hash + TotalEq, V: ToLua> ToLua for HashMap<K, V>
 {
     fn to_lua(&self, state: &State)
     {
@@ -201,7 +201,7 @@ impl<K: ToLua + Hash + Eq, V: ToLua> ToLua for HashMap<K, V>
     }
 }
 
-impl<K: FromLua + Hash + Eq, V: FromLua> FromLua for HashMap<K, V>
+impl<K: FromLua + Hash + TotalEq, V: FromLua> FromLua for HashMap<K, V>
 {
     fn from_lua(state: &State, idx: int) -> Option<HashMap<K, V>>
     {

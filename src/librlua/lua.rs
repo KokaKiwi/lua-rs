@@ -9,7 +9,7 @@ use status::{LuaStatus, LuaOk};
  */
 pub struct Lua<'a>
 {
-    state: State<'a>,
+    pub state: State<'a>,
 }
 
 impl<'a> Lua<'a>

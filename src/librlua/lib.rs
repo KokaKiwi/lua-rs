@@ -1,15 +1,15 @@
-#[crate_id = "rlua#0.3.0"];
-#[crate_type = "lib"];
-#[license = "MIT"];
+#![crate_id = "rlua#0.3.0"]
+#![crate_type = "lib"]
+#![license = "MIT"]
 
-#[feature(globs)];
-#[feature(macro_rules)];
+#![feature(globs)]
+#![feature(macro_rules)]
 
 extern crate collections;
 
 pub use lua::Lua;
 
-#[allow(non_camel_case_types)]
+#[allow(uppercase_variables, non_camel_case_types)]
 pub mod ffi;
 
 pub mod lua;

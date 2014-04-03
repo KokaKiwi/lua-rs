@@ -1,8 +1,8 @@
-#[crate_id = "rlua#0.3.0"];
-#[crate_type = "bin"];
-#[license = "MIT"];
+#![crate_id = "rlua#0.3.0"]
+#![crate_type = "bin"]
+#![license = "MIT"]
 
-#[feature(globs)];
+#![feature(globs)]
 
 extern crate rlua;
 
