@@ -12,159 +12,122 @@ use lua::Lua;
  *
  *  Return None when the types didn't corresponds.
  */
-pub trait FromLua
-{
+pub trait FromLua {
     fn from_lua(state: &State, idx: int) -> Option<Self>;
 }
 
 /// A generic trait for converting a Rust value to a Lua value.
-pub trait ToLua
-{
+pub trait ToLua {
     fn to_lua(&self, state: &State);
 }
 
 // float
-impl FromLua for f64
-{
-    fn from_lua(state: &State, idx: int) -> Option<f64>
-    {
-        match state.get_type(idx)
-        {
+impl FromLua for f64 {
+    fn from_lua(state: &State, idx: int) -> Option<f64> {
+        match state.get_type(idx) {
             LuaNumber => Some(state.get_float(idx)),
             _ => None,
         }
     }
 }
 
-impl ToLua for f64
-{
-    fn to_lua(&self, state: &State)
-    {
+impl ToLua for f64 {
+    fn to_lua(&self, state: &State) {
         state.push_float(*self);
     }
 }
 
 // int
-impl FromLua for int
-{
-    fn from_lua(state: &State, idx: int) -> Option<int>
-    {
-        match state.get_type(idx)
-        {
+impl FromLua for int {
+    fn from_lua(state: &State, idx: int) -> Option<int> {
+        match state.get_type(idx) {
             LuaNumber => Some(state.get_int(idx)),
             _ => None,
         }
     }
 }
 
-impl ToLua for int
-{
-    fn to_lua(&self, state: &State)
-    {
+impl ToLua for int {
+    fn to_lua(&self, state: &State) {
         state.push_int(*self);
     }
 }
 
 // uint
-impl FromLua for uint
-{
-    fn from_lua(state: &State, idx: int) -> Option<uint>
-    {
-        match state.get_type(idx)
-        {
+impl FromLua for uint {
+    fn from_lua(state: &State, idx: int) -> Option<uint> {
+        match state.get_type(idx) {
             LuaNumber => Some(state.get_uint(idx)),
             _ => None,
         }
     }
 }
 
-impl ToLua for uint
-{
-    fn to_lua(&self, state: &State)
-    {
+impl ToLua for uint {
+    fn to_lua(&self, state: &State) {
         state.push_uint(*self);
     }
 }
 
 // &str
-impl<'a> ToLua for &'a str
-{
-    fn to_lua(&self, state: &State)
-    {
+impl<'a> ToLua for &'a str {
+    fn to_lua(&self, state: &State) {
         state.push_str(*self);
     }
 }
 
 // ~str
-impl FromLua for ~str
-{
-    fn from_lua(state: &State, idx: int) -> Option<~str>
-    {
-        match state.get_type(idx)
-        {
+impl FromLua for ~str {
+    fn from_lua(state: &State, idx: int) -> Option<~str> {
+        match state.get_type(idx) {
             LuaString => Some(state.get_str(idx)),
             _ => None,
         }
     }
 }
 
-impl ToLua for ~str
-{
-    fn to_lua(&self, state: &State)
-    {
+impl ToLua for ~str {
+    fn to_lua(&self, state: &State) {
         state.push_str(*self);
     }
 }
 
 // bool
-impl FromLua for bool
-{
-    fn from_lua(state: &State, idx: int) -> Option<bool>
-    {
-        match state.get_type(idx)
-        {
+impl FromLua for bool {
+    fn from_lua(state: &State, idx: int) -> Option<bool> {
+        match state.get_type(idx) {
             LuaBoolean => Some(state.get_bool(idx)),
             _ => None,
         }
     }
 }
 
-impl ToLua for bool
-{
-    fn to_lua(&self, state: &State)
-    {
+impl ToLua for bool {
+    fn to_lua(&self, state: &State) {
         state.push_bool(*self);
     }
 }
 
 // Pointer
-impl<T> FromLua for *T
-{
-    fn from_lua(state: &State, idx: int) -> Option<*T>
-    {
-        match state.get_type(idx)
-        {
+impl<T> FromLua for *T {
+    fn from_lua(state: &State, idx: int) -> Option<*T> {
+        match state.get_type(idx) {
             LuaUserData | LuaLightUserData => Some(state.get_userdata(idx)),
             _ => None,
         }
     }
 }
 
-impl<T> ToLua for *T
-{
-    fn to_lua(&self, state: &State)
-    {
+impl<T> ToLua for *T {
+    fn to_lua(&self, state: &State) {
         state.push_userdata(*self);
     }
 }
 
 // Function
-impl FromLua for fn(l: &Lua) -> int
-{
-    fn from_lua(state: &State, idx: int) -> Option<fn(l: &Lua) -> int>
-    {
-        match state.get_type(idx)
-        {
+impl FromLua for fn(l: &Lua) -> int {
+    fn from_lua(state: &State, idx: int) -> Option<fn(l: &Lua) -> int> {
+        match state.get_type(idx) {
             LuaUserData | LuaLightUserData => {
                 let ptr: fn(&Lua) -> int = unsafe {
                     transmute(state.get_userdata::<*c_void>(idx))
@@ -177,23 +140,18 @@ impl FromLua for fn(l: &Lua) -> int
     }
 }
 
-impl ToLua for fn(l: &Lua) -> int
-{
-    fn to_lua(&self, state: &State)
-    {
+impl ToLua for fn(l: &Lua) -> int {
+    fn to_lua(&self, state: &State) {
         state.push_function(*self);
     }
 }
 
 // HashMap
-impl<K: ToLua + Hash + TotalEq, V: ToLua> ToLua for HashMap<K, V>
-{
-    fn to_lua(&self, state: &State)
-    {
+impl<K: ToLua + Hash + TotalEq, V: ToLua> ToLua for HashMap<K, V> {
+    fn to_lua(&self, state: &State) {
         state.new_table();
 
-        for (ref key, ref val) in self.iter()
-        {
+        for (ref key, ref val) in self.iter() {
             key.to_lua(state);
             val.to_lua(state);
             state.raw_set(-3);
@@ -201,15 +159,12 @@ impl<K: ToLua + Hash + TotalEq, V: ToLua> ToLua for HashMap<K, V>
     }
 }
 
-impl<K: FromLua + Hash + TotalEq, V: FromLua> FromLua for HashMap<K, V>
-{
-    fn from_lua(state: &State, idx: int) -> Option<HashMap<K, V>>
-    {
+impl<K: FromLua + Hash + TotalEq, V: FromLua> FromLua for HashMap<K, V> {
+    fn from_lua(state: &State, idx: int) -> Option<HashMap<K, V>> {
         let mut map: HashMap<K, V> = HashMap::new();
 
         state.push_nil();
-        while state.next(idx - 1)
-        {
+        while state.next(idx - 1) {
             let key: K = match FromLua::from_lua(state, -2) {
                 Some(k) => k,
                 None => {
@@ -232,14 +187,11 @@ impl<K: FromLua + Hash + TotalEq, V: FromLua> FromLua for HashMap<K, V>
 }
 
 // Array
-impl<'a, T: ToLua> ToLua for &'a [T]
-{
-    fn to_lua(&self, state: &State)
-    {
+impl<'a, T: ToLua> ToLua for &'a [T] {
+    fn to_lua(&self, state: &State) {
         state.new_table();
 
-        for (i, ref val) in self.iter().enumerate()
-        {
+        for (i, ref val) in self.iter().enumerate() {
             state.push_uint(i + 1);
             val.to_lua(state);
             state.raw_set(-3);
@@ -247,16 +199,13 @@ impl<'a, T: ToLua> ToLua for &'a [T]
     }
 }
 
-impl<T: FromLua> FromLua for ~[T]
-{
-    fn from_lua(state: &State, idx: int) -> Option<~[T]>
-    {
+impl<T: FromLua> FromLua for ~[T] {
+    fn from_lua(state: &State, idx: int) -> Option<~[T]> {
         let mut v = ~[];
         let length = state.len(idx);
 
         let mut i = 1;
-        while i <= length
-        {
+        while i <= length {
             state.push_int(i);
 
             let val: T = match FromLua::from_lua(state, -1) {

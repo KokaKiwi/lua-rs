@@ -3,8 +3,7 @@ use std::fmt;
 
 use ffi;
 
-pub enum LuaType
-{
+pub enum LuaType {
     LuaNone,
     LuaNil,
     LuaBoolean,
@@ -18,13 +17,10 @@ pub enum LuaType
     LuaUnknown(int),
 }
 
-impl LuaType
-{
+impl LuaType {
     /// Translate Lua type code into an enum.
-    pub fn from_lua(ty: c_int) -> LuaType
-    {
-        match ty
-        {
+    pub fn from_lua(ty: c_int) -> LuaType {
+        match ty {
             ffi::LUA_TNONE => LuaNone,
             ffi::LUA_TNIL => LuaNil,
             ffi::LUA_TBOOLEAN => LuaBoolean,
@@ -40,10 +36,8 @@ impl LuaType
     }
 }
 
-impl fmt::Show for LuaType
-{
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result
-    {
+impl fmt::Show for LuaType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let s = match *self {
             LuaNone => ~"None",
             LuaNil => ~"Nil",

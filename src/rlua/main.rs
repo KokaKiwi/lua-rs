@@ -31,7 +31,9 @@ fn main()
     match status {
         rlua::status::LuaOk => {}
         rlua::status::LuaErr(e) => {
-            fail!("Lua error: {}", e);
+            let msg: ~str = lua.get(-1).unwrap();
+
+            fail!("Lua {}: {}", e, msg);
         }
     }
 }

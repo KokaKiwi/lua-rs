@@ -3,14 +3,14 @@ use std::fmt;
 
 use ffi;
 
-pub enum LuaStatus
-{
+#[deriving(Show, Eq)]
+pub enum LuaStatus {
     LuaOk,
     LuaErr(LuaError),
 }
 
-pub enum LuaError
-{
+#[deriving(Eq)]
+pub enum LuaError {
     RuntimeError,
     MemoryError,
     GCError,
@@ -20,8 +20,7 @@ pub enum LuaError
 }
 
 impl LuaStatus {
-    pub fn from_lua(code: c_int) -> LuaStatus
-    {
+    pub fn from_lua(code: c_int) -> LuaStatus {
         match code
         {
             ffi::LUA_OK => LuaOk,
@@ -30,12 +29,9 @@ impl LuaStatus {
     }
 }
 
-impl LuaError
-{
-    pub fn from_lua(code: c_int) -> LuaError
-    {
-        match code
-        {
+impl LuaError {
+    pub fn from_lua(code: c_int) -> LuaError {
+        match code {
             ffi::LUA_OK => fail!("Not an error."),
             ffi::LUA_ERRRUN => RuntimeError,
             ffi::LUA_ERRMEM => MemoryError,
@@ -47,10 +43,8 @@ impl LuaError
     }
 }
 
-impl fmt::Show for LuaError
-{
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result
-    {
+impl fmt::Show for LuaError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let s = match *self {
             RuntimeError => ~"Runtime error",
             MemoryError => ~"Memory eror",
