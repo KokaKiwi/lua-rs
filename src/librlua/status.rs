@@ -1,5 +1,6 @@
-use std::libc::c_int;
 use std::fmt;
+
+use libc::c_int;
 
 use ffi;
 

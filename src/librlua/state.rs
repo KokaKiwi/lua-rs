@@ -1,6 +1,7 @@
-use std::libc::c_int;
 use std::cast::transmute;
 use std::str::raw;
+
+use libc::c_int;
 
 use ffi;
 use types::LuaType;

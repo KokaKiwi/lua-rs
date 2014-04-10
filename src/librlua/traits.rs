@@ -1,7 +1,8 @@
-use std::libc::*;
 use std::cast::transmute;
 use std::hash::Hash;
 use collections::hashmap::HashMap;
+
+use libc::c_void;
 
 use state::State;
 use types::*;

@@ -1,6 +1,7 @@
-use std::libc::*;
 use std::cast::transmute;
 use std::ptr::*;
+
+use libc::*;
 
 // Types
 pub struct lua_State;

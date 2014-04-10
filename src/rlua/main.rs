@@ -21,7 +21,7 @@ fn main()
 
     let status = if args.len() == 1 {
         let program = io::stdin().read_to_end().unwrap();
-        let program = str::from_utf8(program).unwrap();
+        let program = str::from_utf8(program.as_slice()).unwrap();
 
         lua.exec_str(program)
     } else {
