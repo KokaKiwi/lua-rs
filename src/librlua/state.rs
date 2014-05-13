@@ -1,4 +1,4 @@
-use std::cast::transmute;
+use std::mem::transmute;
 use std::str::raw;
 
 use libc::c_int;

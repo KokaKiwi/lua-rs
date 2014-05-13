@@ -25,7 +25,7 @@ fn main()
 
         lua.exec_str(program)
     } else {
-        lua.exec_file(args[1])
+        lua.exec_file(args.get(1).as_slice())
     };
 
     match status {

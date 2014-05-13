@@ -47,13 +47,13 @@ impl LuaError {
 impl fmt::Show for LuaError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let s = match *self {
-            RuntimeError => ~"Runtime error",
-            MemoryError => ~"Memory eror",
-            GCError => ~"GC error",
-            SyntaxError => ~"Syntax error",
-            FileError => ~"File error",
-            _ => ~"",
+            RuntimeError => "Runtime error".to_owned(),
+            MemoryError => "Memory eror".to_owned(),
+            GCError => "GC error".to_owned(),
+            SyntaxError => "Syntax error".to_owned(),
+            FileError => "File error".to_owned(),
+            _ => "".to_owned(),
         };
-        f.pad(s)
+        s.fmt(f)
     }
 }

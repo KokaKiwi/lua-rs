@@ -1,4 +1,4 @@
-use std::cast::transmute;
+use std::mem::transmute;
 use std::hash::Hash;
 use collections::hashmap::HashMap;
 
@@ -200,9 +200,9 @@ impl<'a, T: ToLua> ToLua for &'a [T] {
     }
 }
 
-impl<T: FromLua> FromLua for ~[T] {
-    fn from_lua(state: &State, idx: int) -> Option<~[T]> {
-        let mut v = ~[];
+impl<T: FromLua> FromLua for Vec<T> {
+    fn from_lua(state: &State, idx: int) -> Option<Vec<T>> {
+        let mut v = Vec::new();
         let length = state.len(idx);
 
         let mut i = 1;

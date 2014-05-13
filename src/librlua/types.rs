@@ -40,18 +40,18 @@ impl LuaType {
 impl fmt::Show for LuaType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let s = match *self {
-            LuaNone => ~"None",
-            LuaNil => ~"Nil",
-            LuaBoolean => ~"Boolean",
-            LuaLightUserData => ~"Light User data",
-            LuaNumber => ~"Number",
-            LuaString => ~"String",
-            LuaTable => ~"Table",
-            LuaFunction => ~"Function",
-            LuaUserData => ~"User data",
-            LuaThread => ~"Thread",
+            LuaNone => "None".to_owned(),
+            LuaNil => "Nil".to_owned(),
+            LuaBoolean => "Boolean".to_owned(),
+            LuaLightUserData => "Light User data".to_owned(),
+            LuaNumber => "Number".to_owned(),
+            LuaString => "String".to_owned(),
+            LuaTable => "Table".to_owned(),
+            LuaFunction => "Function".to_owned(),
+            LuaUserData => "User data".to_owned(),
+            LuaThread => "Thread".to_owned(),
             LuaUnknown(ty) => format!("Unknown({})", ty),
         };
-        f.pad(s)
+        s.fmt(f)
     }
 }

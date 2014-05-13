@@ -1,4 +1,4 @@
-use std::cast::transmute;
+use std::mem::transmute;
 use std::ptr::*;
 
 use libc::*;
