@@ -4,13 +4,17 @@
 
 #![feature(globs)]
 
-extern crate rlua;
+extern crate lua;
 
 use std::os;
 use std::io;
 use std::str;
 
-use rlua::Lua;
+use lua::Lua;
+use lua::status::{
+    LuaOk,
+    LuaErr,
+};
 
 fn main()
 {
@@ -29,9 +33,9 @@ fn main()
     };
 
     match status {
-        rlua::status::LuaOk => {}
-        rlua::status::LuaErr(e) => {
-            let msg: ~str = lua.get(-1).unwrap();
+        LuaOk => {}
+        LuaErr(e) => {
+            let msg: String = lua.get(-1).unwrap();
 
             fail!("Lua {}: {}", e, msg);
         }
